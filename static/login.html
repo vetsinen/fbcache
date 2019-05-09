@@ -15,7 +15,9 @@
         // Full docs on the response object can be found in the documentation
         // for FB.getLoginStatus().
         if (response.status === 'connected') {
-            console.log(response.authResponse.accessToken);
+            let token = response.authResponse.accessToken;
+            console.log(response.authResponse);
+            document.location.replace('/token/'+token);
             // Logged into your app and Facebook.
             //testAPI();
         } else {
@@ -39,8 +41,9 @@
             appId      : '1985660361539188',
             cookie     : true,  // enable cookies to allow the server to access
                                 // the session
+            status     : false,
             xfbml      : true,  // parse social plugins on this page
-            version    : 'v3.2' // The Graph API version to use for the call
+            version    : 'v3.1' // The Graph API version to use for the call
         });
 
         // Now that we've initialized the JavaScript SDK, we call
@@ -85,8 +88,7 @@
                  onlogin="checkLoginState();">
 </fb:login-button>
 
-<div id="status">
-</div>
+<div id="status"></div>
 
 </body>
 </html>

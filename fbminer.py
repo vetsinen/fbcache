@@ -1,19 +1,18 @@
 import facebook
-token = "EAAcN8pRZBfnQBAI57yzUSICdtHrc6ClGONqvpwsfLjZCNKCxv6yPicr5Ew6jk9DYGZA07H5zlNi1mjiMErY7eTgD6mx6OwY2gBZA5nM2hxIIPSXyzvuw3x7CZAEI4LwKQ0uZBc7fXarGZCrcs5OTp2YDxxOlg30T7N2yKeA5jSZBrW6JbAzRVdOTug9uEqZBMwKIZD"
-#experimental token
-token = "EAAcN8pRZBfnQBAAMgJcab09ro0XhlJnusRA8wdGDMLsUmvJDeULgGyOY3oxxirYewKbnIVPYq7ZBjxShoUa6eB6ZBfa97EpieRYOfIkP24dztl0f3VLTk8tNRoUhiMZAHj9c6nCLzTkYANNEHq6clHGovMLYNCLLOmIOlJwaB479DyWO1AmkZCDDFcSaXPNCntQJjIZCjGCgZDZD"
-userid = "10156265228397361"
-graph = facebook.GraphAPI(access_token=token, version="2.8")
-rez = graph.get_all_connections(id=userid, connection_name='events')
-print(rez)
-c=0
-for event in rez:
-    c+=1
-    print(event)
-    break
-print(c) #223
 
-exit()
+def cache_events(token, userid="10156265228397361"):
+    token = "EAAcN8pRZBfnQBAKiFZAzFifP1jSV7gsVRErt3milnhMO9H2EgZBBxyciwH1z4MhqygtSo3OQVO1QG6RkBlbSdZCsg4umX7m7UvLPonZAk8q8GEfjjNhF9S4ZB8Ksl7H5KKOqCAdOr14xpxhmfKFUvBibMzD21RCAfqQTQnZAZBZAHSB8sh4QZCr9A3eybYPHSXZCdvyzOJs3DK3ZAwZDZD"
+    graph = facebook.GraphAPI(access_token=token, version="2.8")
+    rez = graph.get_all_connections(id=userid, connection_name='events')
+    print(rez)
+    c=0
+    for event in rez:
+        c+=1
+        print(event)
+        break
+    print(c) #223
+
+    exit()
 
 # https://github.com/patx/pickledb
 import pickledb
