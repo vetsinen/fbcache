@@ -3,6 +3,7 @@ from flask import Flask
 import facebook
 import sqlite3
 from flask import g
+import datetime
 
 app = Flask(__name__)
 userid = "10156265228397361"
@@ -27,8 +28,8 @@ def process_events(token):
     conn = get_db()
     cursor = conn.cursor()
 
-    for event in rez:
 
+    for event in rez:
         cursor.execute("SELECT EXISTS (SELECT id FROM events WHERE id = '{}' LIMIT 1);".format(event['id']))
         check = cursor.fetchall()[0][0]
         if check == 1:
@@ -40,24 +41,29 @@ def process_events(token):
             place = ''
         date = event['start_time'][:10]
         time = event['start_time'][11:16]
+        delta = datetime.datetime.strptime(event['end_time'], "%Y-%m-%dT%H:%M:%S%z") - datetime.datetime.strptime(event['start_time'], "%Y-%m-%dT%H:%M:%S%z")
         if event['rsvp_status'] == 'unsure':
             priority = 6
         else:
             priority = 1
+
+        if delta.days > 1:
+            priority = 9
         description = event['description'].replace('"','`').replace("'","`")
         name = event['name'].replace('"','`').replace("'","`")
         place = place.replace('"','`').replace("'","`")
         sql = 'insert into events (id,name,date,time,priority,description,place,datetime) values ({},"{}","{}","{}",{},"{}","{}","{}")'.\
             format(event['id'], name , date, time, priority,description,place,event['start_time'])
-        print(sql)
         cursor.execute(sql)
         conn.commit()
-        if c>15:
+        event['description'] = event['description'][:20]  # taking fragment for printing
+        print(event)
+        if c>2000:
             break
 
 
     conn.close()
-    print(42)
+
 
 if __name__ == '__main__':
     app.run()
