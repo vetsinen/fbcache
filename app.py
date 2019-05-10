@@ -24,6 +24,7 @@ def token(token):
 def process_events(token):
     graph = facebook.GraphAPI(access_token=token, version="3.1")
     rez = graph.get_all_connections(id=userid, connection_name='events')
+
     c = 0
     conn = get_db()
     cursor = conn.cursor()
@@ -41,14 +42,16 @@ def process_events(token):
             place = ''
         date = event['start_time'][:10]
         time = event['start_time'][11:16]
-        delta = datetime.datetime.strptime(event['end_time'], "%Y-%m-%dT%H:%M:%S%z") - datetime.datetime.strptime(event['start_time'], "%Y-%m-%dT%H:%M:%S%z")
         if event['rsvp_status'] == 'unsure':
             priority = 6
         else:
             priority = 1
 
-        if delta.days > 1:
-            priority = 9
+        if 'end_time' in event.keys():
+            delta = datetime.datetime.strptime(event['end_time'], "%Y-%m-%dT%H:%M:%S%z") - datetime.datetime.strptime(event['start_time'], "%Y-%m-%dT%H:%M:%S%z")
+            if delta.days > 1:
+                priority = 9
+
         description = event['description'].replace('"','`').replace("'","`")
         name = event['name'].replace('"','`').replace("'","`")
         place = place.replace('"','`').replace("'","`")
@@ -57,11 +60,10 @@ def process_events(token):
         cursor.execute(sql)
         conn.commit()
         event['description'] = event['description'][:20]  # taking fragment for printing
-        print(event)
         if c>2000:
             break
 
-
+    print('events ',c)
     conn.close()
 
 
