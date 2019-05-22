@@ -7,6 +7,7 @@ import datetime
 
 app = Flask(__name__)
 userid = "10156265228397361"
+userid = "143260170135375" #ryan foster
 DATABASE = 'events.db'
 
 
@@ -36,6 +37,7 @@ def process_events(token):
         if check == 1:
             continue
         c += 1
+        print(event)
         try:
             place = event['place']['name']
         except:
