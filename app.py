@@ -1,18 +1,24 @@
 """ flask server module for processing fb tokens """
 from flask import Flask
+from flask import render_template
 import facebook
 import sqlite3
 from flask import g
 import datetime
 
 app = Flask(__name__)
-userid = "10156265228397361"
-userid = "143260170135375" #ryan foster
+userid = "143260170135375"  # ryan foster
 DATABASE = 'events.db'
 
 
-@app.route('/')
-def hello_world():
+@app.route('/events/')
+def list_events(date=datetime.datetime.now().isoformat()[:10]):
+    events = grab_events_for_date(date)
+    return render_template('events.html',events = events)
+
+
+@app.route('/token/')
+def hello_login():
     return app.send_static_file('login.html')
 
 
@@ -20,6 +26,12 @@ def hello_world():
 def token(token):
     process_events(token)
     return 'Hello token'
+
+def grab_events_for_date(date):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT name,time,place,description FROM events WHERE date = '{}' ORDER BY priority, time ;".format(date))
+    return cursor.fetchall()
 
 
 def process_events(token):
@@ -29,7 +41,6 @@ def process_events(token):
     c = 0
     conn = get_db()
     cursor = conn.cursor()
-
 
     for event in rez:
         cursor.execute("SELECT EXISTS (SELECT id FROM events WHERE id = '{}' LIMIT 1);".format(event['id']))
@@ -50,22 +61,23 @@ def process_events(token):
             priority = 1
 
         if 'end_time' in event.keys():
-            delta = datetime.datetime.strptime(event['end_time'], "%Y-%m-%dT%H:%M:%S%z") - datetime.datetime.strptime(event['start_time'], "%Y-%m-%dT%H:%M:%S%z")
+            delta = datetime.datetime.strptime(event['end_time'], "%Y-%m-%dT%H:%M:%S%z") - datetime.datetime.strptime(
+                event['start_time'], "%Y-%m-%dT%H:%M:%S%z")
             if delta.days > 1:
                 priority = 9
 
-        description = event['description'].replace('"','`').replace("'","`")
-        name = event['name'].replace('"','`').replace("'","`")
-        place = place.replace('"','`').replace("'","`")
-        sql = 'insert into events (id,name,date,time,priority,description,place,datetime) values ({},"{}","{}","{}",{},"{}","{}","{}")'.\
-            format(event['id'], name , date, time, priority,description,place,event['start_time'])
+        description = event['description'].replace('"', '`').replace("'", "`")
+        name = event['name'].replace('"', '`').replace("'", "`")
+        place = place.replace('"', '`').replace("'", "`")
+        sql = 'insert into events (id,name,date,time,priority,description,place,datetime) values ({},"{}","{}","{}",{},"{}","{}","{}")'. \
+            format(event['id'], name, date, time, priority, description, place, event['start_time'])
         cursor.execute(sql)
         conn.commit()
         event['description'] = event['description'][:20]  # taking fragment for printing
-        if c>2000:
+        if c > 2000:
             break
 
-    print('events ',c)
+    print('events ', c)
     conn.close()
 
 

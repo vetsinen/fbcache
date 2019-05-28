@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>events</title>
+</head>
+<body>
+{% for event in events %}
+    <details>
+    <summary>{{ event[0][:30] }},{{ event[1] }}@{{ event[2] }}</summary>
+    <div>{{ event[3] }}</div>
+    </details>
+{%  endfor %}
+</body>
+</html>
