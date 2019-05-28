@@ -8,8 +8,8 @@ import datetime
 
 app = Flask(__name__)
 userid = "143260170135375"  # ryan foster
-DATABASE = 'events.db'
-
+DATABASE = 'events.db' #problem to get from pythonanywhere
+#DATABASE = '/home/xtfkpi/mysite/events.db' #for pythonanywhere
 
 @app.route('/events/')
 def list_events(date=datetime.datetime.now().isoformat()[:10]):
