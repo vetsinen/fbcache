@@ -24,6 +24,17 @@ def list_events(date=datetime.datetime.now().isoformat()[:10]):
 def hello_login():
     return app.send_static_file('login.html')
 
+@app.route('/up1/<eventid>')
+def up1(eventid):
+    pass
+
+@app.route('/down1/<eventid>')
+def down1(eventid):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("update events set priority = priority  + 1 where id = '{}'".format(eventid))
+    conn.close()
+    return ''
 
 @app.route('/token/<token>')
 def token(token):
@@ -33,7 +44,7 @@ def token(token):
 def grab_events_for_date(date):
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT name,time,place,description FROM events WHERE date = '{}' ORDER BY priority, time ;".format(date))
+    cursor.execute("SELECT name,time,place,description,id FROM events WHERE date = '{}' ORDER BY priority, time ;".format(date))
     return cursor.fetchall()
 
 
