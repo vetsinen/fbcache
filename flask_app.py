@@ -5,11 +5,14 @@ import facebook
 import sqlite3
 from flask import g
 import datetime
+import os
 
 app = Flask(__name__)
 userid = "143260170135375"  # ryan foster
-DATABASE = 'events.db' #problem to get from pythonanywhere
-#DATABASE = '/home/xtfkpi/mysite/events.db' #for pythonanywhere
+if os.getuid() == 1000: #localrun
+    DATABASE = 'events.db' #problem to get from pythonanywhere
+if os.getuid() == 5604817: #stupid way to define if we launched on server
+    DATABASE = '/home/xtfkpi/mysite/events.db' #for pythonanywhere
 
 @app.route('/')
 def list_events(date=datetime.datetime.now().isoformat()[:10]):
