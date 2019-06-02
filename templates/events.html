@@ -3,13 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>events</title>
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
 <body>
+<nav style="text-align: center"><a href="#">tomorrow</a> | <a href="#">today</a></nav>
 {% for event in events %}
     <details>
     <summary>{{ event[0][:30] }},{{ event[1] }}@{{ event[2] }}</summary>
     <div>{{ event[3] }}</div>
+
     </details>
+    <div><a href="#">origin</a> <button class="btn btn-primary btn-lg">+1</button> <button class="btn btn-primary btn-lg"> -1</button>
+        <button>hide</button> <button>unrsvp</button>
+    </div>
 {%  endfor %}
+<script src="/static/jquery.slim.min.js"></script>
+<script src="/static/bootstrap.min.js"></script>
+
 </body>
 </html>

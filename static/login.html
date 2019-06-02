@@ -16,7 +16,7 @@
         // for FB.getLoginStatus().
         if (response.status === 'connected') {
             let token = response.authResponse.accessToken;
-            console.log(response.authResponse);
+            console.log(response.authResponse.accessToken);
             document.location.replace('/token/'+token);
             // Logged into your app and Facebook.
             //testAPI();

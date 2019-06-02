@@ -11,7 +11,7 @@ userid = "143260170135375"  # ryan foster
 DATABASE = 'events.db' #problem to get from pythonanywhere
 #DATABASE = '/home/xtfkpi/mysite/events.db' #for pythonanywhere
 
-@app.route('/events/')
+@app.route('/')
 def list_events(date=datetime.datetime.now().isoformat()[:10]):
     events = grab_events_for_date(date)
     return render_template('events.html',events = events)
