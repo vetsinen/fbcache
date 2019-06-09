@@ -26,17 +26,20 @@ def hello_login():
 
 @app.route('/up1/<eventid>')
 def up1(eventid):
-    pass
+    conn = get_db()
+    cursor = conn.cursor()
+    sql = "update events set priority = priority  - 1 where id = '{}'".format(eventid)
+    cursor.execute(sql)
+    conn.commit()
+    return ''
 
 @app.route('/down1/<eventid>')
 def down1(eventid):
     conn = get_db()
     cursor = conn.cursor()
     sql = "update events set priority = priority  + 1 where id = '{}'".format(eventid)
-    print(sql)
     cursor.execute(sql)
     conn.commit()
-    conn.close()
     return ''
 
 @app.route('/token/<token>')
