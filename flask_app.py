@@ -32,7 +32,10 @@ def up1(eventid):
 def down1(eventid):
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("update events set priority = priority  + 1 where id = '{}'".format(eventid))
+    sql = "update events set priority = priority  + 1 where id = '{}'".format(eventid)
+    print(sql)
+    cursor.execute(sql)
+    conn.commit()
     conn.close()
     return ''
 
