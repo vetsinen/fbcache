@@ -15,9 +15,11 @@ if os.getuid() == 5604817: #stupid way to define if we launched on server
     DATABASE = '/home/xtfkpi/mysite/events.db' #for pythonanywhere
 
 @app.route('/')
+@app.route('/<date>')
 def list_events(date=datetime.datetime.now().isoformat()[:10]):
+    tomorrow = (datetime.datetime.now()+datetime.timedelta(days=1)).isoformat()[:10]
     events = grab_events_for_date(date)
-    return render_template('events.html',events = events)
+    return render_template('events.html',events = events,tomorrow = tomorrow)
 
 
 @app.route('/token/')

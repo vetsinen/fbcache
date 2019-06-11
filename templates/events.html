@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
 <body>
-<nav style="text-align: center"><a href="#">tomorrow</a> | <a href="/">today</a></nav>
+<nav style="text-align: center"><a href="/{{ tomorrow }}">tomorrow</a> | <a href="/">today</a></nav>
 {% for event in events %}
     <details>
         <summary>{{ event[0][:30] }},{{ event[1] }}@{{ event[2] }}</summary>
