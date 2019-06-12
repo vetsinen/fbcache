@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Facebook Login JavaScript Example</title>
+    <title>pull last events</title>
     <meta charset="UTF-8">
 </head>
 <body>
@@ -15,9 +15,9 @@
         // Full docs on the response object can be found in the documentation
         // for FB.getLoginStatus().
         if (response.status === 'connected') {
-            let token = response.authResponse.accessToken;
-            console.log(response.authResponse.accessToken);
-            document.location.replace('/token/'+token);
+            //let token = response.authResponse.accessToken;
+            console.log(response.authResponse);//.accessToken);
+            document.location.replace('/token/'+response.authResponse.userID+'/'+response.authResponse.accessToken);
             // Logged into your app and Facebook.
             //testAPI();
         } else {

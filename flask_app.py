@@ -1,6 +1,5 @@
 """ flask server module for processing fb tokens """
-from flask import Flask
-from flask import render_template
+from flask import Flask, render_template, redirect
 import facebook
 import sqlite3
 from flask import g
@@ -8,23 +7,26 @@ import datetime
 import os
 
 app = Flask(__name__)
-userid = "143260170135375"  # ryan foster
-if os.getuid() == 1000: #localrun
-    DATABASE = 'events.db' #problem to get from pythonanywhere
-if os.getuid() == 5604817: #stupid way to define if we launched on server
-    DATABASE = '/home/xtfkpi/mysite/events.db' #for pythonanywhere
+#userid = "143260170135375"  # ryan foster
+# userid = "10156265228397361"  # vetal
+if os.getuid() == 1000:  # localrun
+    DATABASE = 'events.db'  # problem to get from pythonanywhere
+if os.getuid() == 5604817:  # stupid way to define if we launched on server
+    DATABASE = '/home/xtfkpi/mysite/events.db'  # for pythonanywhere
+
 
 @app.route('/')
 @app.route('/<date>')
 def list_events(date=datetime.datetime.now().isoformat()[:10]):
-    tomorrow = (datetime.datetime.now()+datetime.timedelta(days=1)).isoformat()[:10]
+    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).isoformat()[:10]
     events = grab_events_for_date(date)
-    return render_template('events.html',events = events,tomorrow = tomorrow)
+    return render_template('events.html', events=events, tomorrow=tomorrow)
 
 
-@app.route('/token/')
+@app.route('/pull/')
 def hello_login():
     return app.send_static_file('login.html')
+
 
 @app.route('/up1/<eventid>')
 def up1(eventid):
@@ -35,6 +37,7 @@ def up1(eventid):
     conn.commit()
     return ''
 
+
 @app.route('/down1/<eventid>')
 def down1(eventid):
     conn = get_db()
@@ -44,19 +47,22 @@ def down1(eventid):
     conn.commit()
     return ''
 
-@app.route('/token/<token>')
-def token(token):
-    process_events(token)
-    return 'Hello token'
+
+@app.route('/token/<userid>/<token>')
+def token(userid, token):
+    process_events(userid,token)
+    return redirect("/")
+
 
 def grab_events_for_date(date):
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT name,time,place,description,id FROM events WHERE date = '{}' ORDER BY priority, time ;".format(date))
+    cursor.execute(
+        "SELECT name,time,place,description,id FROM events WHERE date = '{}' ORDER BY priority, time ;".format(date))
     return cursor.fetchall()
 
 
-def process_events(token):
+def process_events(userid, token):
     graph = facebook.GraphAPI(access_token=token, version="3.1")
     rez = graph.get_all_connections(id=userid, connection_name='events')
 
