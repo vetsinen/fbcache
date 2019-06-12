@@ -57,8 +57,9 @@ def token(userid, token):
 def grab_events_for_date(date):
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute(
-        "SELECT name,time,place,description,id FROM events WHERE date = '{}' ORDER BY priority, time ;".format(date))
+    sql = "SELECT name,time,place,description,id FROM events WHERE date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date,date)
+    print(sql)
+    cursor.execute(sql)
     return cursor.fetchall()
 
 
@@ -91,14 +92,17 @@ def process_events(userid, token):
         if 'end_time' in event.keys():
             delta = datetime.datetime.strptime(event['end_time'], "%Y-%m-%dT%H:%M:%S%z") - datetime.datetime.strptime(
                 event['start_time'], "%Y-%m-%dT%H:%M:%S%z")
+            enddate = event['end_time'][:10]
             if delta.days > 1:
                 priority = 9
+        else:
+            enddate = date
 
         description = event['description'].replace('"', '`').replace("'", "`")
         name = event['name'].replace('"', '`').replace("'", "`")
         place = place.replace('"', '`').replace("'", "`")
-        sql = 'insert into events (id,name,date,time,priority,description,place,datetime) values ({},"{}","{}","{}",{},"{}","{}","{}")'. \
-            format(event['id'], name, date, time, priority, description, place, event['start_time'])
+        sql = 'insert into events (id,name,date,enddate, time,priority,description,place,datetime) values ({},"{}","{}","{}","{}",{},"{}","{}","{}")'. \
+            format(event['id'], name, date,enddate, time, priority, description, place, event['start_time'])
         cursor.execute(sql)
         conn.commit()
         event['description'] = event['description'][:20]  # taking fragment for printing
