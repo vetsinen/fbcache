@@ -7,7 +7,7 @@ import datetime
 import os
 
 app = Flask(__name__)
-#userid = "143260170135375"  # ryan foster
+# userid = "143260170135375"  # ryan foster
 # userid = "10156265228397361"  # vetal
 if os.getuid() == 1000:  # localrun
     DATABASE = 'events.db'  # problem to get from pythonanywhere
@@ -17,9 +17,11 @@ if os.getuid() == 5604817:  # stupid way to define if we launched on server
 
 @app.route('/')
 @app.route('/<date>')
-def list_events(date=datetime.datetime.now().isoformat()[:10]):
+@app.route('/all/<int:fullhouse>')
+def list_events(date=datetime.datetime.now().isoformat()[:10],fullhouse=0):
+    print('fullhouse is ',fullhouse)
     tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).isoformat()[:10]
-    events = grab_events_for_date(date)
+    events = grab_events_for_date(date) if fullhouse !=1 else grab_allevents()
     return render_template('events.html', events=events, tomorrow=tomorrow)
 
 
@@ -50,15 +52,21 @@ def down1(eventid):
 
 @app.route('/token/<userid>/<token>')
 def token(userid, token):
-    process_events(userid,token)
+    process_events(userid, token)
     return redirect("/")
 
 
 def grab_events_for_date(date):
     conn = get_db()
     cursor = conn.cursor()
-    sql = "SELECT name,time,place,description,id FROM events WHERE date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date,date)
-    print(sql)
+    sql = "SELECT name,time,address,description,id,place,latitude,longitude FROM events WHERE date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date, date)
+    cursor.execute(sql)
+    return cursor.fetchall()
+
+def grab_allevents():
+    conn = get_db()
+    cursor = conn.cursor()
+    sql = "SELECT name,time,address,description,id,place,latitude,longitude FROM events"
     cursor.execute(sql)
     return cursor.fetchall()
 
@@ -82,6 +90,10 @@ def process_events(userid, token):
             place = event['place']['name']
         except:
             place = ''
+        description = event['description'].replace('"', '`').replace("'", "`")
+        name = event['name'].replace('"', '`').replace("'", "`")
+        place = place.replace('"', '`').replace("'", "`")
+
         date = event['start_time'][:10]
         time = event['start_time'][11:16]
         if event['rsvp_status'] == 'unsure':
@@ -98,11 +110,21 @@ def process_events(userid, token):
         else:
             enddate = date
 
-        description = event['description'].replace('"', '`').replace("'", "`")
-        name = event['name'].replace('"', '`').replace("'", "`")
-        place = place.replace('"', '`').replace("'", "`")
-        sql = 'insert into events (id,name,date,enddate, time,priority,description,place,datetime) values ({},"{}","{}","{}","{}",{},"{}","{}","{}")'. \
-            format(event['id'], name, date,enddate, time, priority, description, place, event['start_time'])
+        try:
+            address = event['place']['location']['street']
+        except:
+            address = place
+
+        try:
+            latitude = event['place']['location']['latitude']
+            longitude = event['place']['location']['longitude']
+        except:
+            latitude = None
+            longitude = None
+
+
+        sql = 'insert into events (id,name,date,enddate, time,priority,description,place,datetime,address,latitude,longitude) values ({},"{}","{}","{}","{}",{},"{}","{}","{}","{}","{}","{}")'. \
+            format(event['id'], name, date, enddate, time, priority, description, place, event['start_time'],address,latitude,longitude)
         cursor.execute(sql)
         conn.commit()
         event['description'] = event['description'][:20]  # taking fragment for printing

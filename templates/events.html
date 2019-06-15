@@ -7,17 +7,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
 <body>
-<nav style="text-align: center"><a href="/{{ tomorrow }}">tomorrow</a> | <a href="/">today</a> | <a href="/pull/">check for new events</a></nav>
+<nav style="text-align: center"><a href="/{{ tomorrow }}">tomorrow</a> | <a href="/">today</a> | <a href="/pull/">check for new events</a> |
+    <a href="/all/1">surf all events</a></nav>
 {% for event in events %}
     <details>
-        <summary title="{{ event[3] }}" >{{ event[0][:50] }},{{ event[1] }}@{{ event[2] }}</summary>
+        <summary title="{{ event[3] }}" >{{ event[0][:50] }},{{ event[1] }}@{{ event[2] }}-{{ event[5] }}</summary>
         <div>{{ event[3] }}</div>
 
     </details>
-    <div><a href="https://www.facebook.com/events/{{ event[4] }}/" target="_blank"
-            title="original event link will be opened in new tab">event in fb</a>
+    <div>
         <button onclick="up1({{ event[4] }})" title="get it up" class="btn btn-primary btn-lg">▲</button>
         <button onclick="down1({{ event[4] }})" title="get it down" class="btn btn-primary btn-lg">▼</button>
+        <a href="https://www.google.com.ua/maps/search/{{ event[2] }}" target="_blank">show location on google map</a>
+        <a href="https://www.facebook.com/events/{{ event[4] }}/" target="_blank"
+            title="original event link will be opened in new tab">{{ event[0][:15]  }} in fb</a>
+
 {#        <button disabled>спрятать</button>#}
 {#        <button disabled>отписатся</button>#}
     </div>
