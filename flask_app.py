@@ -5,6 +5,7 @@ import sqlite3
 from flask import g
 import datetime
 import os
+from dou_grabber import check_dou_updates
 
 app = Flask(__name__)
 # userid = "143260170135375"  # ryan foster
@@ -14,6 +15,8 @@ if os.getuid() == 1000:  # localrun
 if os.getuid() == 5604817:  # stupid way to define if we launched on server
     DATABASE = '/home/xtfkpi/mysite/events.db'  # for pythonanywhere
 
+def remove_all_quotes(s):
+    return s.replace('"','').replace("'","")
 
 @app.route('/')
 @app.route('/<date>')
@@ -59,28 +62,32 @@ def token(userid, token):
 def grab_events_for_date(date):
     conn = get_db()
     cursor = conn.cursor()
-    sql = "SELECT name,time,address,description,id,place,latitude,longitude FROM events WHERE date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date, date)
+    sql = "SELECT name,time,address,description,origin,place,latitude,longitude FROM events WHERE date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date, date)
     cursor.execute(sql)
     return cursor.fetchall()
 
 def grab_allevents():
     conn = get_db()
     cursor = conn.cursor()
-    sql = "SELECT name,time,address,description,id,place,latitude,longitude FROM events"
+    sql = "SELECT name,time,address,description,origin,place,latitude,longitude FROM events"
     cursor.execute(sql)
     return cursor.fetchall()
 
 
 def process_events(userid, token):
-    graph = facebook.GraphAPI(access_token=token, version="3.1")
-    rez = graph.get_all_connections(id=userid, connection_name='events')
-
     c = 0
     conn = get_db()
     cursor = conn.cursor()
 
+    check_dou_updates(cursor)
+    conn.commit()
+
+
+    graph = facebook.GraphAPI(access_token=token, version="3.1")
+    rez = graph.get_all_connections(id=userid, connection_name='events')
+
     for event in rez:
-        cursor.execute("SELECT EXISTS (SELECT id FROM events WHERE id = '{}' LIMIT 1);".format(event['id']))
+        cursor.execute("SELECT EXISTS (SELECT origin FROM events WHERE origin = 'https://www.facebook.com/events/{}' LIMIT 1);".format(event['id']))
         check = cursor.fetchall()[0][0]
         if check == 1:
             continue
@@ -114,6 +121,7 @@ def process_events(userid, token):
             address = event['place']['location']['street']
         except:
             address = place
+        address=remove_all_quotes(address)
 
         try:
             latitude = event['place']['location']['latitude']
@@ -123,8 +131,10 @@ def process_events(userid, token):
             longitude = None
 
 
-        sql = 'insert into events (id,name,date,enddate, time,priority,description,place,datetime,address,latitude,longitude) values ({},"{}","{}","{}","{}",{},"{}","{}","{}","{}","{}","{}")'. \
+        sql = 'insert into events (origin,name,date,enddate, time,priority,description,place,datetime,address,latitude,longitude) values ("https://www.facebook.com/events/{}","{}","{}","{}","{}",{},"{}","{}","{}","{}","{}","{}")'. \
             format(event['id'], name, date, enddate, time, priority, description, place, event['start_time'],address,latitude,longitude)
+
+        print(sql)
         cursor.execute(sql)
         conn.commit()
         event['description'] = event['description'][:20]  # taking fragment for printing

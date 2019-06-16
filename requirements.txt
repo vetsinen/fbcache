@@ -1,2 +1,4 @@
 flask
 facebook-sdk
+feedparser
+html2text

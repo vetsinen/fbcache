@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Календарь</title>
+    <title>citify calendar</title>
     <link rel="stylesheet" href="/static/bootstrap.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
@@ -18,9 +18,9 @@
     <div>
         <button onclick="up1({{ event[4] }})" title="get it up" class="btn btn-primary btn-lg">▲</button>
         <button onclick="down1({{ event[4] }})" title="get it down" class="btn btn-primary btn-lg">▼</button>
-        <a href="https://www.google.com.ua/maps/search/{{ event[2] }}" target="_blank">show location on google map</a>
-        <a href="https://www.facebook.com/events/{{ event[4] }}/" target="_blank"
-            title="original event link will be opened in new tab">{{ event[0][:15]  }} in fb</a>
+        <a href="https://www.google.com.ua/maps/search/{{ event[2] }}" target="_blank">show location on google map</a> |
+        <a href="{{ event[4] }}" target="_blank"
+            title="original event link will be opened in new tab">{{ event[0][:15]  }}</a>
 
 {#        <button disabled>спрятать</button>#}
 {#        <button disabled>отписатся</button>#}
