@@ -62,9 +62,9 @@ def check_dou_updates(cursor=None):
         priority = 6
 
         if cursor:
-            sql = 'insert into events (origin,name,date,enddate,time,priority,description,address) values ' \
-                  '("{}","{}","{}","{}","{}","{}","{}","{}")'. \
-                format(el.id, name, date,date, start, priority, description, address)
+            sql = 'insert into events (origin,name,date,enddate,time,priority,description,address,source) values ' \
+                  '("{}","{}","{}","{}","{}","{}","{}","{}","{}")'. \
+                format(el.id, name, date,date, start, priority, description, address,"dou")
             print(sql)
             cursor.execute(sql)
 

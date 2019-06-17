@@ -68,7 +68,7 @@ def token(userid, token):
 def grab_events_for_date(date):
     conn = get_db()
     cursor = conn.cursor()
-    sql = "SELECT name,time,address,description,origin,place,latitude,longitude,id FROM events WHERE date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date, date)
+    sql = "SELECT name,time,address,description,origin,place,latitude,longitude,id,source FROM events WHERE date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date, date)
     cursor.execute(sql)
     return cursor.fetchall()
 
@@ -137,8 +137,8 @@ def process_events(userid, token):
             longitude = None
 
 
-        sql = 'insert into events (origin,name,date,enddate, time,priority,description,place,datetime,address,latitude,longitude) values ("https://www.facebook.com/events/{}","{}","{}","{}","{}",{},"{}","{}","{}","{}","{}","{}")'. \
-            format(event['id'], name, date, enddate, time, priority, description, place, event['start_time'],address,latitude,longitude)
+        sql = 'insert into events (origin,name,date,enddate, time,priority,description,place,datetime,address,latitude,longitude,source) values ("https://www.facebook.com/events/{}","{}","{}","{}","{}",{},"{}","{}","{}","{}","{}","{}","{}")'. \
+            format(event['id'], name, date, enddate, time, priority, description, place, event['start_time'],address,latitude,longitude,"fb")
 
         print(sql)
         cursor.execute(sql)
