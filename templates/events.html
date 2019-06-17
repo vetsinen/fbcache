@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>citify calendar</title>
+    <title>citify {{ today }} calendar</title>
     <link rel="stylesheet" href="/static/bootstrap.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
 <body>
-<nav style="text-align: center"><a href="/{{ tomorrow }}">tomorrow</a> | <a href="/">today</a> | <a href="/pull/">check for new events</a> |
+<nav style="text-align: center"><a href="/{{ tomorrow }}">tomorrow</a> | <a href="/">today:{{ today }}</a> | <a href="/pull/">check for new events</a> |
     <a href="/all/1">surf all events</a></nav>
 {% for event in events %}
     <details>
@@ -16,8 +16,8 @@
 
     </details>
     <div>
-        <button onclick="up1({{ event[4] }})" title="get it up" class="btn btn-primary btn-lg">▲</button>
-        <button onclick="down1({{ event[4] }})" title="get it down" class="btn btn-primary btn-lg">▼</button>
+        <button onclick="up1({{ event[8] }})" title="get it up" class="btn btn-primary btn-lg">▲</button>
+        <button onclick="down1({{ event[8] }})" title="get it down" class="btn btn-primary btn-lg">▼</button>
         <a href="https://www.google.com.ua/maps/search/{{ event[2] }}" target="_blank">show location on google map</a> |
         <a href="{{ event[4] }}" target="_blank"
             title="original event link will be opened in new tab">{{ event[0][:15]  }}</a>

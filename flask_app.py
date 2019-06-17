@@ -10,6 +10,7 @@ from dou_grabber import check_dou_updates
 app = Flask(__name__)
 # userid = "143260170135375"  # ryan foster
 # userid = "10156265228397361"  # vetal
+LOCAL_RUN = True if os.getuid() == 1000 else False
 if os.getuid() == 1000:  # localrun
     DATABASE = 'events.db'  # problem to get from pythonanywhere
 if os.getuid() == 5604817:  # stupid way to define if we launched on server
@@ -21,12 +22,17 @@ def remove_all_quotes(s):
 @app.route('/')
 @app.route('/<date>')
 @app.route('/all/<int:fullhouse>')
-def list_events(date=datetime.datetime.now().isoformat()[:10],fullhouse=0):
-    print('fullhouse is ',fullhouse)
-    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).isoformat()[:10]
-    events = grab_events_for_date(date) if fullhouse !=1 else grab_allevents()
-    return render_template('events.html', events=events, tomorrow=tomorrow)
+def list_events(date=None,fullhouse=0):
+    today = datetime.datetime.now()
+    if not LOCAL_RUN:
+        today = today + datetime.timedelta(hours=4)
+    tomorrow = (today + datetime.timedelta(days=1)).isoformat()[:10]
+    today = date or today.isoformat()[:10]
+    events = grab_events_for_date(today) if fullhouse !=1 else grab_allevents()
+    return render_template('events.html', events=events,today=today, tomorrow=tomorrow)
 
+def fullhouse():
+    return render_template('events.html')
 
 @app.route('/pull/')
 def hello_login():
@@ -62,7 +68,7 @@ def token(userid, token):
 def grab_events_for_date(date):
     conn = get_db()
     cursor = conn.cursor()
-    sql = "SELECT name,time,address,description,origin,place,latitude,longitude FROM events WHERE date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date, date)
+    sql = "SELECT name,time,address,description,origin,place,latitude,longitude,id FROM events WHERE date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date, date)
     cursor.execute(sql)
     return cursor.fetchall()
 
