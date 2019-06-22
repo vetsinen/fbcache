@@ -1,13 +1,15 @@
 """ flask server module for processing fb tokens """
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, session
 import facebook
 import sqlite3
 from flask import g
 import datetime
 import os
 from dou_grabber import check_dou_updates
+from mstations import closest_stations
 
 app = Flask(__name__)
+app.secret_key = b'sb!qb-bt4+Z-tgcuWBr^zs8J5tT2=kZ5'
 # userid = "143260170135375"  # ryan foster
 # userid = "10156265228397361"  # vetal
 LOCAL_RUN = True if os.getuid() == 1000 else False
@@ -20,9 +22,11 @@ def remove_all_quotes(s):
     return s.replace('"','').replace("'","")
 
 @app.route('/')
-@app.route('/<date>')
+@app.route('/date/<date>')
 @app.route('/all/<int:fullhouse>')
 def list_events(date=None,fullhouse=0):
+    if 'token' in session:
+        print('fb token ',session['token'])
     today = datetime.datetime.now()
     if not LOCAL_RUN:
         today = today + datetime.timedelta(hours=4)
@@ -61,6 +65,8 @@ def down1(eventid):
 
 @app.route('/token/<userid>/<token>')
 def token(userid, token):
+    session['userid']=userid
+    session['token']=token
     process_events(userid, token)
     return redirect("/")
 
@@ -68,14 +74,14 @@ def token(userid, token):
 def grab_events_for_date(date):
     conn = get_db()
     cursor = conn.cursor()
-    sql = "SELECT name,time,address,description,origin,place,latitude,longitude,id,source FROM events WHERE date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date, date)
+    sql = "SELECT name,time,address,description,origin,place,latitude,longitude,id,source,closest_stations FROM events WHERE date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date, date)
     cursor.execute(sql)
     return cursor.fetchall()
 
 def grab_allevents():
     conn = get_db()
     cursor = conn.cursor()
-    sql = "SELECT name,time,address,description,origin,place,latitude,longitude FROM events"
+    sql = "SELECT name,time,address,description,origin,place,latitude,longitude,id,source,closest_stations,date,enddate  FROM events"
     cursor.execute(sql)
     return cursor.fetchall()
 
@@ -93,12 +99,14 @@ def process_events(userid, token):
     rez = graph.get_all_connections(id=userid, connection_name='events')
 
     for event in rez:
-        cursor.execute("SELECT EXISTS (SELECT origin FROM events WHERE origin = 'https://www.facebook.com/events/{}' LIMIT 1);".format(event['id']))
+        print(event['name'])
+        id = event['id']
+        sql = f"SELECT EXISTS (SELECT origin FROM events WHERE origin = 'https://www.facebook.com/events/{id}' LIMIT 1);"
+        cursor.execute(sql)
         check = cursor.fetchall()[0][0]
         if check == 1:
             continue
         c += 1
-        print(event)
         try:
             place = event['place']['name']
         except:
@@ -107,6 +115,7 @@ def process_events(userid, token):
         name = event['name'].replace('"', '`').replace("'", "`")
         place = place.replace('"', '`').replace("'", "`")
 
+        datetimestr = event['start_time']
         date = event['start_time'][:10]
         time = event['start_time'][11:16]
         if event['rsvp_status'] == 'unsure':
@@ -132,23 +141,21 @@ def process_events(userid, token):
         try:
             latitude = event['place']['location']['latitude']
             longitude = event['place']['location']['longitude']
+
         except:
             latitude = None
             longitude = None
 
+        st = closest_stations(address)
 
-        sql = 'insert into events (origin,name,date,enddate, time,priority,description,place,datetime,address,latitude,longitude,source) values ("https://www.facebook.com/events/{}","{}","{}","{}","{}",{},"{}","{}","{}","{}","{}","{}","{}")'. \
-            format(event['id'], name, date, enddate, time, priority, description, place, event['start_time'],address,latitude,longitude,"fb")
-
-        print(sql)
+        sql = f'insert into events (origin,name,date,enddate, time,priority,description,place,datetime,address,latitude,longitude,source, closest_stations) values ("https://www.facebook.com/events/{id}","{name}","{date}","{enddate}","{time}",{priority},"{description}","{place}","{datetimestr}","{address}","{latitude}","{longitude}","fb","{st}")'
         cursor.execute(sql)
         conn.commit()
         event['description'] = event['description'][:20]  # taking fragment for printing
-        if c > 2000:
+        if c > 200000:
             break
-
-    print('events ', c)
     conn.close()
+    print('events added ',c)
 
 
 if __name__ == '__main__':

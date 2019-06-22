@@ -1,6 +1,7 @@
 import feedparser
 from datetime import datetime
 from html2text import html2text
+from mstations import closest_stations
 
 def remove_all_quotes(s):
     return s.replace('"','').replace("'","")
@@ -60,12 +61,10 @@ def check_dou_updates(cursor=None):
         start, address = get_attributes_from_summary(description)
         # print(name,description)
         priority = 6
+        st = closest_stations(address)
 
         if cursor:
-            sql = 'insert into events (origin,name,date,enddate,time,priority,description,address,source) values ' \
-                  '("{}","{}","{}","{}","{}","{}","{}","{}","{}")'. \
-                format(el.id, name, date,date, start, priority, description, address,"dou")
-            print(sql)
+            sql = f'insert into events (origin,name,date,enddate,time,priority,description,address,source,closest_stations) values ("{el.id}","{name}","{date}","{date}","{start}","{priority}","{description}","{address}","dou","{st}")'
             cursor.execute(sql)
 
 
