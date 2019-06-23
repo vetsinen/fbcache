@@ -13,23 +13,24 @@
     </style>
 </head>
 <body>
-<nav style="text-align: center"><a href="/date/{{ tomorrow }}">tomorrow</a> | <a href="/">today:{{ today }}</a> | <a href="/pull/">check for new events</a> |
-    <a href="/all/1">surf all events</a></nav>
+<nav style="text-align: center"><a href="/date/{{ tomorrow }}">tomorrow</a> | <a href="/">today:{{ today }}</a> | <a href="/pull/">update</a> |
+    <a href="/all/1">surf all</a></nav>
 {% for event in events %}
     <details>
-        <summary title="{{ event[3] }}" >{{ event[1] }},{{ event[0][:75] }},{{ event[9] }},{{ event[11] }} - {{ event[12] }} <br>
+        <summary title="{{ event[3] }}" >{{ event[1] }},{{ event[0][:40] }},{{ event[9] }},
             {{ event[10] }}@{{ event[2] }}-{{ event[5] }}</summary>
         <div>{{ event[3] }}</div>
 
     </details>
-    <div>
+    <div style="clear: both;">
         <button onclick="up1({{ event[8] }})" title="get it up" class="btn btn-primary btn-lg">▲</button>
         <button onclick="down1({{ event[8] }})" title="get it down" class="btn btn-primary btn-lg">▼</button>
+
         <a href="https://www.google.com.ua/maps/search/{{ event[2] }}" target="_blank">show on map</a> |
         <a href="{{ event[4] }}" target="_blank"
-            title="original event link will be opened in new tab">original link to {{ event[0][:15]  }}</a>
+            title="original event link will be opened in new tab"> link to {{ event[0][:10]  }}</a>
+{#        <button class="btn btn-danger btn-sm" style="float: right;">hide</button>#}
 
-{#        <button disabled>спрятать</button>#}
 {#        <button disabled>отписатся</button>#}
     </div>
 {% endfor %}

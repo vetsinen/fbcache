@@ -74,7 +74,7 @@ def token(userid, token):
 def grab_events_for_date(date):
     conn = get_db()
     cursor = conn.cursor()
-    sql = "SELECT name,time,address,description,origin,place,latitude,longitude,id,source,closest_stations FROM events WHERE date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date, date)
+    sql = "SELECT name,time,address,description,origin,place,latitude,longitude,id,source,closest_stations FROM events WHERE public=1 AND date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date, date)
     cursor.execute(sql)
     return cursor.fetchall()
 
@@ -121,7 +121,7 @@ def process_events(userid, token):
         if event['rsvp_status'] == 'unsure':
             priority = 6
         else:
-            priority = 1
+            priority = 2
 
         if 'end_time' in event.keys():
             delta = datetime.datetime.strptime(event['end_time'], "%Y-%m-%dT%H:%M:%S%z") - datetime.datetime.strptime(
