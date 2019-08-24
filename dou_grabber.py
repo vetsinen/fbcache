@@ -3,8 +3,10 @@ from datetime import datetime
 from html2text import html2text
 from mstations import closest_stations
 
+
 def remove_all_quotes(s):
-    return s.replace('"','').replace("'","")
+    return s.replace('"', '').replace("'", "")
+
 
 def get_attributes_from_summary(s):
     time = '23:30'
@@ -24,13 +26,14 @@ def check_dou_updates(cursor=None):
         currentYear = str(datetime.now().year)
         ua_months = ["січня", "лютого", "березня", "травня", "квітня", "червня", "липня", "серпня", "вересня", "жовтня",
                      "листопада", "грудня"]
-        ru_months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "авгутса", "сентября", "октября",
+        ru_months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября",
                      "ноября", "декабря"]
         en_months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october",
                      "november", "december"]
         words = s.split(" ")
         day = words[-2].zfill(2)
         strmonth = words[-1].lower()
+
         try:
             month = ua_months.index(strmonth)
         except(ValueError):
@@ -55,7 +58,11 @@ def check_dou_updates(cursor=None):
 
         # rowtitle = el.title
         words = el.title.split(",")
-        name, date = remove_all_quotes(words[-3]) , words[-2]
+        name = remove_all_quotes(words[-3])
+        date = remove_all_quotes(words[-2]).strip()
+        print('date len ',len(date.split(" ")), date)
+        if len(date.split(" ")) == 3:
+            continue  # we don't care about next year
         date = date_from_string(date)
         description = remove_all_quotes(html2text(el.summary))
         start, address = get_attributes_from_summary(description)

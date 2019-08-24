@@ -94,7 +94,6 @@ def process_events(userid, token):
     check_dou_updates(cursor)
     conn.commit()
 
-
     graph = facebook.GraphAPI(access_token=token, version="3.1")
     rez = graph.get_all_connections(id=userid, connection_name='events')
 
@@ -111,7 +110,9 @@ def process_events(userid, token):
             place = event['place']['name']
         except:
             place = ''
-        description = event['description'].replace('"', '`').replace("'", "`")
+        description=''
+        if 'description' in event:
+            description = event['description'].replace('"', '`').replace("'", "`")
         name = event['name'].replace('"', '`').replace("'", "`")
         place = place.replace('"', '`').replace("'", "`")
 
@@ -151,7 +152,6 @@ def process_events(userid, token):
         sql = f'insert into events (origin,name,date,enddate, time,priority,description,place,datetime,address,latitude,longitude,source, closest_stations) values ("https://www.facebook.com/events/{id}","{name}","{date}","{enddate}","{time}",{priority},"{description}","{place}","{datetimestr}","{address}","{latitude}","{longitude}","fb","{st}")'
         cursor.execute(sql)
         conn.commit()
-        event['description'] = event['description'][:20]  # taking fragment for printing
         if c > 200000:
             break
     conn.close()
