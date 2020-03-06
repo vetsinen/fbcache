@@ -119,10 +119,10 @@ def process_events(userid, token):
         datetimestr = event['start_time']
         date = event['start_time'][:10]
         time = event['start_time'][11:16]
-        if event['rsvp_status'] == 'unsure':
+
+        priority = 2
+        if 'rsvp_status' in event and event['rsvp_status'] == 'unsure':
             priority = 6
-        else:
-            priority = 2
 
         if 'end_time' in event.keys():
             delta = datetime.datetime.strptime(event['end_time'], "%Y-%m-%dT%H:%M:%S%z") - datetime.datetime.strptime(

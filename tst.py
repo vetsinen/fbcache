@@ -1,5 +1,14 @@
+a = {
+    'description': 'The Neighbourhood їдуть до Києва з масштабним проектop Corn (без сервісного збору) - bit.ly/t/36aSw3M',
+    'end_time': '2020-12-02T22:00:00+0200',
+    'name': 'The Neighbourhood. 2 грудня, Палац Спорту',
+    'place': {'name': 'Палац Спорту',
+              'location': {'city': 'Kyiv', 'country': 'Ukraine', 'latitude': 50.43724, 'located_in': '374816775951295',
+                           'longitude': 30.52226, 'street': 'Спортивна площа,1', 'zip': '01001'},
+              'id': '476591799464322'},
+    'start_time': '2020-12-02T19:00:00+0200', 'id': '478624349376056'}
 
-
+print( a.keys())
 # conn = sqlite3.connect('events.db')
 #
 # #Создаем курсор - это специальный объект который делает запросы и получает их результаты
