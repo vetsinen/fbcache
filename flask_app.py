@@ -91,8 +91,8 @@ def process_events(userid, token):
     conn = get_db()
     cursor = conn.cursor()
 
-    check_dou_updates(cursor)
-    conn.commit()
+    # check_dou_updates(cursor)
+    # conn.commit()
 
     graph = facebook.GraphAPI(access_token=token, version="3.1")
     rez = graph.get_all_connections(id=userid, connection_name='events')
