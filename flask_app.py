@@ -18,25 +18,29 @@ if os.getuid() == 1000:  # localrun
 if os.getuid() == 5604817:  # stupid way to define if we launched on server
     DATABASE = '/home/xtfkpi/mysite/events.db'  # for pythonanywhere
 
+
 def remove_all_quotes(s):
-    return s.replace('"','').replace("'","")
+    return s.replace('"', '').replace("'", "")
+
 
 @app.route('/')
 @app.route('/date/<date>')
 @app.route('/all/<int:fullhouse>')
-def list_events(date=None,fullhouse=0):
+def list_events(date=None, fullhouse=0):
     if 'token' in session:
-        print('fb token ',session['token'])
+        print('fb token ', session['token'])
     today = datetime.datetime.now()
     if not LOCAL_RUN:
         today = today + datetime.timedelta(hours=4)
     tomorrow = (today + datetime.timedelta(days=1)).isoformat()[:10]
     today = date or today.isoformat()[:10]
-    events = grab_events_for_date(today) if fullhouse !=1 else grab_allevents()
-    return render_template('events.html', events=events,today=today, tomorrow=tomorrow)
+    events = grab_events_for_date(today) if fullhouse != 1 else grab_allevents()
+    return render_template('events.html', events=events, today=today, tomorrow=tomorrow)
+
 
 def fullhouse():
     return render_template('events.html')
+
 
 @app.route('/pull/')
 def hello_login():
@@ -65,8 +69,8 @@ def down1(eventid):
 
 @app.route('/token/<userid>/<token>')
 def token(userid, token):
-    session['userid']=userid
-    session['token']=token
+    session['userid'] = userid
+    session['token'] = token
     process_events(userid, token)
     return redirect("/")
 
@@ -74,9 +78,11 @@ def token(userid, token):
 def grab_events_for_date(date):
     conn = get_db()
     cursor = conn.cursor()
-    sql = "SELECT name,time,address,description,origin,place,latitude,longitude,id,source,closest_stations FROM events WHERE public=1 AND date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(date, date)
+    sql = "SELECT name,time,address,description,origin,place,latitude,longitude,id,source,closest_stations FROM events WHERE public=1 AND date <= '{}' AND enddate>='{}' ORDER BY priority, time ;".format(
+        date, date)
     cursor.execute(sql)
     return cursor.fetchall()
+
 
 def grab_allevents():
     conn = get_db()
@@ -110,7 +116,7 @@ def process_events(userid, token):
             place = event['place']['name']
         except:
             place = ''
-        description=''
+        description = ''
         if 'description' in event:
             description = event['description'].replace('"', '`').replace("'", "`")
         name = event['name'].replace('"', '`').replace("'", "`")
@@ -137,7 +143,7 @@ def process_events(userid, token):
             address = event['place']['location']['street']
         except:
             address = place
-        address=remove_all_quotes(address)
+        address = remove_all_quotes(address)
 
         try:
             latitude = event['place']['location']['latitude']
@@ -155,7 +161,7 @@ def process_events(userid, token):
         if c > 200000:
             break
     conn.close()
-    print('events added ',c)
+    print('events added ', c)
 
 
 if __name__ == '__main__':

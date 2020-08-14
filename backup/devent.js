@@ -1,4 +1,5 @@
-ex1 = {'title': 'HR Tech Meet Up: “Power of self-learning teams”, 11 липня, Київ',
+ex1 = {
+    'title': 'HR Tech Meet Up: “Power of self-learning teams”, 11 липня, Київ',
     'title_detail': {
         'type': 'text/plain',
         'language': None,

@@ -7,6 +7,7 @@ GET https://graph.facebook.com/143260170135375?fields=name&access_token=EAAcN8pR
 Accept: application/json
 
 https://graph.facebook.com/object-id?access_token=your-access-token
+
 ###
 
 # For a quick start check out our HTTP Requests collection (Tools|HTTP Client|Open HTTP Requests Collection).

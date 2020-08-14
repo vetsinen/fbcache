@@ -60,7 +60,7 @@ def check_dou_updates(cursor=None):
         words = el.title.split(",")
         name = remove_all_quotes(words[-3])
         date = remove_all_quotes(words[-2]).strip()
-        print('date len ',len(date.split(" ")), date)
+        print('date len ', len(date.split(" ")), date)
         if len(date.split(" ")) == 3:
             continue  # we don't care about next year
         date = date_from_string(date)
