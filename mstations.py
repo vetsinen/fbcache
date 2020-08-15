@@ -61,16 +61,15 @@ def dist(p, m):
 
 
 def closest_stations(address):
-    return "Khreshatik"
+    # return "Khreshatik"
     time_to_sleep = 3
     # sleep(6)
-    g = geocoder.arcgis('Ukraine, Kyiv,' + address,
-                        key='Wxz0Dxi56jy3BBH_Z42T6__yIq-Wc6HPIsZdysNyP4brGhnWREJjW92LVJtLQ6CBcyMm6OSQxeSoKLn3Iaww8IR88F_1RIGfyPb3hEmDXKWI1_-EVdqZU5Ly2EufR_8s').latlng
-    if g is None:
+    g = geocoder.osm('Ukraine, Kyiv,' + address)
+    if g.lat is None:
         return "Khreshatik"
     print('finded location')
-    print(g)
-    distances = [{'station': metro, 'distance': dist(g, coords[metro])} for metro in coords]
+    print(g.lat, g.lng)
+    distances = [{'station': metro, 'distance': dist((g.lat, g.lng), coords[metro])} for metro in coords]
     distances = sorted(distances, key=lambda el: el['distance'])
     rez = distances[0]['station'] + ' ' + distances[1]['station'] + ' ' + distances[2]['station']
 
@@ -78,4 +77,4 @@ def closest_stations(address):
 
 
 if __name__ == "__main__":
-    print(closest_stations("вулиця Ползунова, 1"))
+    print(closest_stations("бульвар Вацлава Гавела, 4"))

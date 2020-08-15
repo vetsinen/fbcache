@@ -1,12 +1,21 @@
-a = {
-    'description': 'The Neighbourhood їдуть до Києва з масштабним проектop Corn (без сервісного збору) - bit.ly/t/36aSw3M',
-    'end_time': '2020-12-02T22:00:00+0200',
-    'name': 'The Neighbourhood. 2 грудня, Палац Спорту',
-    'place': {'name': 'Палац Спорту',
-              'location': {'city': 'Kyiv', 'country': 'Ukraine', 'latitude': 50.43724, 'located_in': '374816775951295',
-                           'longitude': 30.52226, 'street': 'Спортивна площа,1', 'zip': '01001'},
-              'id': '476591799464322'},
-    'start_time': '2020-12-02T19:00:00+0200', 'id': '478624349376056'}
+a = {'accuracy': 0.401,
+     'address': 'бульвар Вацлава Гавела, Миколи Василенка вулиця, Грушки, Відрадний, Київ, Солом’янський район, 03024, Україна',
+     'bbox': {'northeast': [50.4471158, 30.4201457], 'southwest': [50.4470158, 30.4200457]}, 'city': 'Київ',
+     'confidence': 10, 'country': 'Україна', 'country_code': 'ua',
+     'icon': 'https://nominatim.openstreetmap.org/images/mapicons/transport_tram_stop.p.20.png', 'importance': 0.401,
+     'lat': 50.4470658, 'lng': 30.4200957, 'ok': True, 'osm_id': 1465727588, 'osm_type': 'node', 'place_id': 15711857,
+     'place_rank': 30, 'postal': '03024', 'quality': 'tram_stop', 'quarter': 'Грушки',
+     'raw': {'place_id': 15711857, 'licence': 'Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright',
+             'osm_type': 'node', 'osm_id': 1465727588,
+             'boundingbox': ['50.4470158', '50.4471158', '30.4200457', '30.4201457'], 'lat': '50.4470658',
+             'lon': '30.4200957',
+             'display_name': 'бульвар Вацлава Гавела, Миколи Василенка вулиця, Грушки, Відрадний, Київ, Солом’янський район, 03024, Україна',
+             'place_rank': 30, 'category': 'railway', 'type': 'tram_stop', 'importance': 0.401,
+             'icon': 'https://nominatim.openstreetmap.org/images/mapicons/transport_tram_stop.p.20.png',
+             'address': {'railway': 'бульвар Вацлава Гавела', 'road': 'Миколи Василенка вулиця', 'quarter': 'Грушки',
+                         'suburb': 'Відрадний', 'city': 'Київ', 'borough': 'Солом’янський район', 'postcode': '03024',
+                         'country': 'Україна', 'country_code': 'ua'}}, 'status': 'OK',
+     'street': 'Миколи Василенка вулиця', 'suburb': 'Відрадний', 'type': 'tram_stop'}
 
 print(a.keys())
 # conn = sqlite3.connect('events.db')
